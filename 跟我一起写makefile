@@ -1,1 +1,136 @@
+前言
+	1.makefile类似于shell脚本可以执行操作系统的命令
+
+程序的编译与链接
+	1.中间文件 .obj, .o文件 
+	2.链接器只管函数的中间目标文件
+	3.链接时需要给中间文件打包，.lib .a文件
+
+makefile介绍
+	makefile规则：
+		target...: preprequisites...
+			command
+			...
+			...
+		target可以是目标文件，object file，执行文件， label
+		preprequisites是生成那个target所需要的文件或者目标，依赖文件
+		command make需要执行的命令
+
+makefile 实例推倒
+	edit : main.o kbd.o command.o display.o \
+		insert.o search.o files.o utils.o
+		cc -o edit main.o kbd.o command.o display.o \
+		insert.o search.o files.o utils.o
+	main.o : main.c defs.h
+		cc -c main.ckbd.o : kbd.c defs.h command.h
+		cc -c kbd.c
+	command.o : command.c defs.h command.h
+		cc -c command.c
+	display.o : display.c defs.h buffer.h
+		cc -c display.c
+	insert.o : insert.c defs.h buffer.h
+		cc -c insert.c
+	search.o : search.c defs.h buffer.h
+		cc -c search.c
+	files.o : files.c defs.h buffer.h command.h
+		cc -c files.c
+	utils.o : utils.c defs.h
+		cc -c utils.c
+	clean :
+	rm edit main.o kbd.o command.o display.o \
+		insert.o search.o files.o utils.o
+
+================================================================================================
+
+	Project = main.o kbd.o command.o display.o \
+		insert.o search.o files.o utils.o
+	
+利用在makefile中使用变量与让makefile自动推倒的规则
+	edit : $(Project)
+		cc -o edit $(Project)
+	main.o : defs.h
+	kbd.o : defs.h command.h
+	command.o : defs.h command.h
+	display.o : defs.h buffer.h
+	insert.o : defs.h buffer.h
+	search.o : defs.h buffer.h
+	files.o : defs.h buffer.h command.h
+	utils.o : defs.h
+	.PHONY : clean
+	clean :
+		-rm edit $(objects)
+
+	【.PHONY】表示clean是个伪目标文件, rm前面的“-”表示也许某些文件出现问题，不要管继续后面的事
+
+================================================================================================
+	对于重复的.h文件可以利用makefile的特性收拢
+	edit : $(Project)
+		cc -o edit $(Project)
+	$(Projects) : defs.h
+	kbd.o command.o files.o : command.h
+	display.o insert.o search.o files.o : buffers.h
+
+	.PHONY : clean
+	clean :
+		-rm edit $(objects)
+
+
+引用其它的Makefile文件
+	在Makefile文件中可以使用include关键字包含其它的Makefile文件，记住include前面的的空字符不能使Tab。
+	
+
+在规则中使用通配符
+	*, ?, [...]
+	~符号的使用：“～/test”表示当前用户$HOME下的test目录
+
+文件搜索
+	Makefile中的VPATH
+	VPATH = src: ../headers "src" "../headers"定义了两个目录
+
+	../表示父及目录 /表示根目录 ./表示当前目录6
+
+	另一个设置搜索路径的方法是使用"vpath"
+	vpath <pattern> <directories> 为符合模式<pattern>的文件指定搜索目录<directories>
+	vpath <pattern> 清除符合模式<pattern>的文件的搜索目录
+	vpath 清除所有已被设置好了的文件搜索目录
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
